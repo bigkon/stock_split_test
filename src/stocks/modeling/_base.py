@@ -16,8 +16,6 @@ class BaseModeling(object):
             df_prev = df.shift(periods=offset)
             df_before_prev = df.shift(periods=offset + 1)
             if offset == 1:  # previous day data
-                # add two cols: has price changed significantly related to prev day
-                # and price change between days
                 df['is_significant'] = (((df_prev['close'] - df['close']) / df_prev['close']).abs() > 0.3).astype(uint8)
                 df['price_change_between_days'] = (df_prev['close'] - df['open']) / df_prev['close']
             df['swing_diff_{}'.format(-offset)] = df_prev['swing'] - df_before_prev['swing']
@@ -32,21 +30,6 @@ class BaseModeling(object):
                 df.loc[mask, 'diff_diff_{}'.format(-offset)] = nan
                 df.loc[mask, 'volume_diff_{}'.format(-offset)] = nan
                 del df_prev, df_before_prev
-
-            data_next = df.shift(periods=-offset)
-            data_before_next = df.shift(periods=-offset + 1)
-            df['swing_diff_{}'.format(offset)] = data_next['swing'] - data_before_next['swing']
-            df['diff_diff_{}'.format(offset)] = data_next['diff'] - data_before_next['diff']
-            df['volume_diff_{}'.format(offset)] = (data_next['volume'] - data_before_next['volume']) / data_before_next['volume']
-            df['current_swing_diff_{}'.format(offset)] = df['swing'] - data_next['swing']
-            df['current_diff_diff_{}'.format(offset)] = df['diff'] - data_next['diff']
-            df['current_volume_diff_{}'.format(offset)] = (df['volume'] - data_next['volume']) / data_next['volume']
-            if train:
-                mask = data_next['symbol'] != df['symbol']
-                df.loc[mask, 'swing_diff_{}'.format(offset)] = nan
-                df.loc[mask, 'diff_diff_{}'.format(offset)] = nan
-                df.loc[mask, 'volume_diff_{}'.format(offset)] = nan
-                del data_next, data_before_next
 
         df.fillna(0, inplace=True)
         df['weekday'] = df['date'].dt.dayofweek
