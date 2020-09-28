@@ -12,4 +12,5 @@ make main
 ```
 Starting may take up to 10 minutes, depending on the CPU power.  
 After model is trained, web UI will be available at `127.0.0.1:8000`.  
-Further instructions can be found in the UI main page.
+You should upload csv file with some individual stock daily data for service to generate possible stock splits dates.  
+Check CSV file [example](data/aapl.csv).
